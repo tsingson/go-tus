@@ -13,6 +13,8 @@ var (
 	ErrLargeUpload       = errors.New("upload body is to large.")
 	ErrVersionMismatch   = errors.New("protocol version mismatch.")
 	ErrOffsetMismatch    = errors.New("upload offset mismatch.")
+	ErrCorsIsNotAllowed  = errors.New("cors is not allowed.")
+	ErrParameterMismatch = errors.New("parameter mismatch.")
 	ErrUploadNotFound    = errors.New("upload not found.")
 	ErrResumeNotEnabled  = errors.New("resuming not enabled.")
 	ErrFingerprintNotSet = errors.New("fingerprint not set.")

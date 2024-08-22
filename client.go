@@ -3,7 +3,6 @@ package tus
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	netUrl "net/url"
 	"strconv"
@@ -73,7 +72,6 @@ func (c *Client) CreateUpload(u *Upload) (*Uploader, error) {
 	}
 
 	req, err := http.NewRequest("POST", c.Url, nil)
-
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +81,6 @@ func (c *Client) CreateUpload(u *Upload) (*Uploader, error) {
 	req.Header.Set("Upload-Metadata", u.EncodedMetadata())
 
 	res, err := c.Do(req)
-
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +142,6 @@ func (c *Client) ResumeUpload(u *Upload) (*Uploader, error) {
 	}
 
 	offset, err := c.getUploadOffset(url)
-
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +166,7 @@ func (c *Client) CreateOrResumeUpload(u *Upload) (*Uploader, error) {
 	return nil, err
 }
 
-func (c *Client) uploadChunck(url string, body io.Reader, size int64, offset int64) (int64, error) {
+func (c *Client) uploadChunck(url string, body io.Reader, size, offset int64) (int64, error) {
 	var method string
 
 	if !c.Config.OverridePatchMethod {
@@ -180,7 +176,6 @@ func (c *Client) uploadChunck(url string, body io.Reader, size int64, offset int
 	}
 
 	req, err := http.NewRequest(method, url, body)
-
 	if err != nil {
 		return -1, err
 	}
@@ -194,7 +189,6 @@ func (c *Client) uploadChunck(url string, body io.Reader, size int64, offset int
 	}
 
 	res, err := c.Do(req)
-
 	if err != nil {
 		return -1, err
 	}
@@ -209,6 +203,11 @@ func (c *Client) uploadChunck(url string, body io.Reader, size int64, offset int
 		}
 	case 409:
 		return -1, ErrOffsetMismatch
+	case 403:
+		return -1, ErrCorsIsNotAllowed
+
+	case 400:
+		return 0, ErrParameterMismatch
 	case 412:
 		return -1, ErrVersionMismatch
 	case 413:
@@ -220,13 +219,11 @@ func (c *Client) uploadChunck(url string, body io.Reader, size int64, offset int
 
 func (c *Client) getUploadOffset(url string) (int64, error) {
 	req, err := http.NewRequest("HEAD", url, nil)
-
 	if err != nil {
 		return -1, err
 	}
 
 	res, err := c.Do(req)
-
 	if err != nil {
 		return -1, err
 	}
@@ -252,7 +249,7 @@ func (c *Client) getUploadOffset(url string) (int64, error) {
 }
 
 func newClientError(res *http.Response) ClientError {
-	body, _ := ioutil.ReadAll(res.Body)
+	body, _ := io.ReadAll(res.Body)
 	return ClientError{
 		Code: res.StatusCode,
 		Body: body,

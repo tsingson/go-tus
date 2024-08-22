@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/tus/tusd/pkg/filestore"
-	tusd "github.com/tus/tusd/pkg/handler"
+	"github.com/tus/tusd/v2/pkg/filestore"
+	tusd "github.com/tus/tusd/v2/pkg/handler"
 )
 
 type MockStore struct {
@@ -72,7 +72,6 @@ func (s *UploadTestSuite) SetupSuite() {
 		NotifyTerminatedUploads: false,
 		RespectForwardedHeaders: true,
 	})
-
 	if err != nil {
 		panic(err)
 	}
@@ -87,7 +86,6 @@ func (s *UploadTestSuite) TearDownSuite() {
 }
 
 func (s *UploadTestSuite) TestSmallUploadFromFile() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -124,7 +122,6 @@ func (s *UploadTestSuite) TestSmallUploadFromFile() {
 }
 
 func (s *UploadTestSuite) TestLargeUpload() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -161,7 +158,6 @@ func (s *UploadTestSuite) TestLargeUpload() {
 }
 
 func (s *UploadTestSuite) TestUploadFromBytes() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -188,7 +184,6 @@ func (s *UploadTestSuite) TestUploadFromBytes() {
 }
 
 func (s *UploadTestSuite) TestOverridePatchMethod() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -217,7 +212,6 @@ func (s *UploadTestSuite) TestOverridePatchMethod() {
 }
 
 func (s *UploadTestSuite) TestConcurrentUploads() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -266,7 +260,6 @@ func (s *UploadTestSuite) TestConcurrentUploads() {
 }
 
 func (s *UploadTestSuite) TestResumeUpload() {
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -286,7 +279,7 @@ func (s *UploadTestSuite) TestResumeUpload() {
 		OverridePatchMethod: false,
 		Store:               NewMockStore(),
 		Header: map[string][]string{
-			"X-Extra-Header": []string{"somevalue"},
+			"X-Extra-Header": {"somevalue"},
 		},
 	}
 
@@ -360,7 +353,6 @@ func (s *UploadTestSuite) TestUploadLocation() {
 		s.Nil(err)
 		s.EqualValues(sourceURL.Scheme+"://"+sourceURL.Host+path.Join(sourceURL.Path, location), resourceURL.String())
 	})
-
 }
 
 func TestUploadTestSuite(t *testing.T) {

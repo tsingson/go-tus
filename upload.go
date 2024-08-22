@@ -59,7 +59,6 @@ func (u *Upload) EncodedMetadata() string {
 // NewUploadFromFile creates a new Upload from an os.File.
 func NewUploadFromFile(f *os.File) (*Upload, error) {
 	fi, err := f.Stat()
-
 	if err != nil {
 		return nil, err
 	}
